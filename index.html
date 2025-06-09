@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Iglu - Salapungan Cashier System</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0; padding: 0;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8f8f8;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2em 1em;
+      gap: 2em;
+      min-height: 100vh;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      gap: 1em;
+      padding: 1em 2em;
+      border-radius: 20px;
+      background: linear-gradient(90deg, #00FFFF, #00cfd1);
+      box-shadow: 0 0 15px #00FFFF;
+      width: 100%;
+      max-width: 900px;
+      user-select: none;
+      margin-bottom: 1em;
+    }
+    .logo {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      box-shadow: 0 0 8px 3px white;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .header-text {
+      font-size: 3.5rem;
+      font-weight: 900;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      position: relative;
+      animation: glowMove 3s ease-in-out infinite alternate;
+    }
+    @keyframes glowMove {
+      0% {
+        text-shadow: 0 0 8px #fff, 0 0 20px #00ffff, 0 0 30px #00ffff, 0 0 40px #00ffff, 0 0 50px #00ffff;
+        color: #fff;
+      }
+      50% {
+        text-shadow: 0 0 12px #a0f7ff, 0 0 25px #a0f7ff, 0 0 40px #a0f7ff, 0 0 55px #a0f7ff, 0 0 70px #a0f7ff;
+        color: #fff;
+      }
+      100% {
+        text-shadow: 0 0 8px #fff, 0 0 20px #00ffff, 0 0 30px #00ffff, 0 0 40px #00ffff, 0 0 50px #00ffff;
+        color: #fff;
+      }
+    }
+    .container {
+      background-color: #fff;
+      padding: 2em;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      max-width: 600px;
+      width: 100%;
+      border: 2px solid #00FFFF;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5em;
+    }
+    h1 {
+      font-size: 2rem;
+      color: #00FFFF;
+      text-align: center;
+    }
+    .items-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+    }
+    .item-row {
+      display: flex;
+      gap: 0.8em;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .item-row input[type="text"], 
+    .item-row input[type="number"] {
+      flex-grow: 1;
+      min-width: 120px;
+      padding: 0.6em;
+      font-size: 1rem;
+      border: 2px solid #00FFFF;
+      border-radius: 10px;
+      outline: none;
+    }
+    .item-row input[type="number"] {
+      max-width: 140px;
+    }
+    .item-row button.remove-item {
+      background-color: #ff4d4d;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      padding: 0.6em 1em;
+      cursor: pointer;
+      font-weight: bold;
+      flex-shrink: 0;
+      min-width: 50px;
+      transition: background-color 0.3s ease;
+    }
+    .item-row button.remove-item:hover {
+      background-color: #e04343;
+    }
+    .buttons-group {
+      display: flex;
+      gap: 1em;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .add-item-btn, .submit-btn {
+      background-color: #00FFFF;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      padding: 1em 1.5em;
+      font-size: 1.1rem;
+      cursor: pointer;
+      font-weight: 700;
+      flex: 1 1 200px;
+      min-width: 150px;
+      transition: background-color 0.3s ease;
+      text-align: center;
+    }
+    .add-item-btn:hover, .submit-btn:hover {
+      background-color: #00cfd1;
+    }
+    #status {
+      margin-top: 1em;
+      font-weight: 600;
+      color: #00AAAA;
+      min-height: 2em;
+      white-space: pre-line;
+      max-height: 150px;
+      overflow-y: auto;
+      border: 1px solid #00AAAA;
+      padding: 0.75em;
+      border-radius: 10px;
+      background: #e0fcff;
+      font-family: monospace;
+      font-size: 0.9rem;
+      user-select: text;
+    }
+    #totalPrice {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #00AAAA;
+      text-align: right;
+      margin-top: 0.5em;
+      user-select: none;
+    }
+    @media (max-width: 600px) {
+      .item-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .item-row input[type="number"] {
+        max-width: 100%;
+      }
+      .item-row button.remove-item {
+        width: 100%;
+      }
+      .buttons-group {
+        flex-direction: column;
+      }
+      .add-item-btn, .submit-btn {
+        flex: none;
+        width: 100%;
+        min-width: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-HMxVQRNPTRZkJrCs8DkfTY2Oli9YHLx9Jg&s" alt="Iglu Logo" />
+    </div>
+    <div class="header-text">IGLU - Salapungan</div>
+  </header>
+
+  <div class="container">
+    <h1>Iglu - Salapungan Cashier System</h1>
+
+    <div class="items-list" id="itemsList">
+      <!-- Item rows inserted here -->
+    </div>
+
+    <div id="totalPrice">Total: ₱0.00</div>
+
+    <div class="buttons-group">
+      <button class="add-item-btn" id="addItemBtn">+ Add Item</button>
+      <button class="submit-btn" id="submitBtn">Submit Order</button>
+    </div>
+
+    <div id="status"></div>
+  </div>
+
+  <script>
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwTboziegOJs_4zXDpGIR4SBrh726JTPKhmOjkvph6WMyZKmCi4Sg4SEnhbuSRxy2nI/exec';
+
+    const itemsList = document.getElementById('itemsList');
+    const addItemBtn = document.getElementById('addItemBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    const statusDiv = document.getElementById('status');
+    const totalPriceDiv = document.getElementById('totalPrice');
+
+    function createItemRow(type='', price='', size='') {
+      const div = document.createElement('div');
+      div.className = 'item-row';
+
+      div.innerHTML = `
+        <input type="text" placeholder="Type" class="item-type" value="${type}" required />
+        <input type="number" min="0" step="0.01" placeholder="Price" class="item-price" value="${price}" required />
+        <input type="text" placeholder="Size" class="item-size" value="${size}" required />
+        <button type="button" class="remove-item" title="Remove item">&times;</button>
+      `;
+
+      div.querySelector('.remove-item').onclick = () => {
+        div.remove();
+        updateTotalPrice();
+      };
+
+      div.querySelector('.item-price').addEventListener('input', updateTotalPrice);
+
+      return div;
+    }
+
+    function addInitialItem() {
+      const firstItem = createItemRow();
+      itemsList.appendChild(firstItem);
+      updateTotalPrice();
+    }
+
+    function updateTotalPrice() {
+      const priceInputs = itemsList.querySelectorAll('.item-price');
+      let total = 0;
+      priceInputs.forEach(input => {
+        const val = parseFloat(input.value);
+        if (!isNaN(val)) total += val;
+      });
+      totalPriceDiv.textContent = `Total: ₱${total.toFixed(2)}`;
+    }
+
+    addInitialItem();
+
+    addItemBtn.addEventListener('click', () => {
+      const newItem = createItemRow();
+      itemsList.appendChild(newItem);
+      updateTotalPrice();
+    });
+
+    async function submitOrder() {
+      const rows = [...itemsList.children];
+      if (rows.length === 0) {
+        alert('Add at least one item before submitting.');
+        return;
+      }
+
+      statusDiv.textContent = 'Submitting orders...\n';
+
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        const typeInput = row.querySelector('.item-type');
+        const priceInput = row.querySelector('.item-price');
+        const sizeInput = row.querySelector('.item-size');
+
+        const type = typeInput.value.trim();
+        const price = priceInput.value.trim();
+        const size = sizeInput.value.trim();
+
+        if (!type || !price || !size) {
+          statusDiv.textContent += `Item ${i+1}: Missing fields, skipped.\n`;
+          continue;
+        }
+
+        try {
+          const params = new URLSearchParams();
+          params.append('type', type);
+          params.append('price', price);
+          params.append('size', size);
+
+          const res = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: params.toString()
+          });
+
+          const text = await res.text();
+          statusDiv.textContent += `Item ${i+1} (${type}): ${text}\n`;
+
+        } catch (error) {
+          statusDiv.textContent += `Item ${i+1} (${type}): Error sending order.\n`;
+          console.error(error);
+        }
+      }
+
+      statusDiv.textContent += '\nAll done!';
+
+      // Clear inputs and reset list & total after successful submission
+      itemsList.innerHTML = '';
+      addInitialItem();
+      updateTotalPrice();
+    }
+
+    submitBtn.addEventListener('click', submitOrder);
+  </script>
+</body>
+</html>
